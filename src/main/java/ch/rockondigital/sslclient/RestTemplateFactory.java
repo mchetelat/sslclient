@@ -45,17 +45,21 @@ public class RestTemplateFactory implements FactoryBean<RestTemplate>, Initializ
     @Value("${app.server.api.truststore.password:#{null}}")
     private String truststorePassword;
 
+    public String getTruststorePassword() {
+        return truststorePassword != null && !truststorePassword.equals("") ? truststorePassword : null;
+    }
+
     public Resource getTruststoreResource() {
-        return truststore != null ? applicationContext.getResource(truststore) : null;
+        return truststore != null && !truststore.equals("") ? applicationContext.getResource(truststore) : null;
     }
 
     @Override
     public void afterPropertiesSet() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         final CloseableHttpClient client;
-        if (truststore != null) {
+        if (getTruststoreResource() != null) {
             log.debug("Create client for Avaloq api using truststore and ssl verification");
             client = HttpClientBuilder.create()
-                    .setSSLSocketFactory(buildSSLSocketFactory(getTruststoreResource(), truststorePassword))
+                    .setSSLSocketFactory(buildSSLSocketFactory(getTruststoreResource(), getTruststorePassword()))
                     .build();
         } else if (true) {
             log.debug("Create client for Avaloq api without using truststore and without ssl verification");
