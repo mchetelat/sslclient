@@ -100,6 +100,7 @@ public class RestTemplateFactory implements FactoryBean<RestTemplate>, Initializ
 
             try (InputStream is = trustStoreFile.getInputStream()) {
                 trustStore.load(is, password != null ? password.toCharArray() : null);
+                log.debug("Truststore has been loaded {} password set.", password != null ? "WITH" : "WITHOUT");
 
                 SSLContext sslcontext = SSLContexts.custom()
                         .loadTrustMaterial(trustStore, new TrustSelfSignedStrategy())
